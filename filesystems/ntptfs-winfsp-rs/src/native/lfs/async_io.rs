@@ -1,5 +1,4 @@
 use crate::native::lfs;
-use crate::native::lfs::LFS_EVENT;
 use std::cell::UnsafeCell;
 use std::future::Future;
 use std::mem::MaybeUninit;

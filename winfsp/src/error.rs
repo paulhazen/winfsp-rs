@@ -6,11 +6,6 @@ use windows::Win32::Foundation::{
     NTSTATUS, WIN32_ERROR,
 };
 
-#[cfg(feature = "io-error")]
-use windows::Win32::Foundation::{
-    ERROR_DIRECTORY, ERROR_DIRECTORY_NOT_SUPPORTED, ERROR_FILENAME_EXCED_RANGE,
-};
-
 use winfsp_sys::FspNtStatusFromWin32;
 
 /// Error type for WinFSP.
@@ -52,15 +47,10 @@ impl FspError {
                     ErrorKind::PermissionDenied => ERROR_ACCESS_DENIED,
                     ErrorKind::AlreadyExists => ERROR_ALREADY_EXISTS,
                     ErrorKind::InvalidInput => ERROR_INVALID_PARAMETER,
-                    #[cfg(feature = "io-error")]
-                    ErrorKind::InvalidFilename => ERROR_FILENAME_EXCED_RANGE,
-                    #[cfg(feature = "io-error")]
-                    ErrorKind::IsADirectory => ERROR_DIRECTORY_NOT_SUPPORTED,
-                    #[cfg(feature = "io-error")]
-                    ErrorKind::NotADirectory => ERROR_DIRECTORY,
-                    // todo: return something sensible.
-                    _ => panic!("Unsupported IO error {:?}", e),
+                    
+                    _ => ERROR_INVALID_PARAMETER, // Fallback for stable Rust
                 };
+                
                 unsafe { FspNtStatusFromWin32(win32_equiv.0) }
             }
             &FspError::NTSTATUS(e) => e,

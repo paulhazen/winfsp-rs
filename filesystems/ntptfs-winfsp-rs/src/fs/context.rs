@@ -407,11 +407,12 @@ impl FileSystemContext for NtPassthroughContext {
             Err(e) => Err(e),
         }?;
 
-        if let Some(extra_buffer) = extra_buffer
-            && extra_buffer_is_reparse_point
-        {
-            lfs::lfs_fs_control_file(*handle, FSCTL_SET_REPARSE_POINT, Some(extra_buffer), None)?;
+        if let Some(extra_buffer) = extra_buffer {
+            if extra_buffer_is_reparse_point {
+                lfs::lfs_fs_control_file(*handle, FSCTL_SET_REPARSE_POINT, Some(extra_buffer), None)?;
+            }
         }
+        
 
         let file_size = file_info.as_ref().file_size;
         lfs::lfs_get_file_info(*handle, Some(self.root_prefix_len), file_info)?;
